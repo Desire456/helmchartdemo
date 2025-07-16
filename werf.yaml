@@ -1,0 +1,39 @@
+project: helmchartdemo-app
+configVersion: 1
+build:
+  platform:
+    - linux/arm64
+
+---
+image: build
+from: eclipse-temurin:21-jdk
+git:
+  - add: /
+    to: /app
+    stageDependencies:
+      setup:
+        - "config/*"
+        - "gradle/*"
+        - "spec/*"
+        - "src/*"
+        - "build.gradle.kts"
+        - "gradlew"
+        - "gradlew.bat"
+        - "lombok.config"
+        - "settings.gradle.kts"
+shell:
+  setup:
+    - cd /app
+    - ./gradlew build -x check --no-daemon --warning-mode none
+
+---
+image: helmchartdemo-app
+from: eclipse-temurin:21-jdk
+import:
+  - image: build
+    add: /app/build/libs/helmchartdemo.jar
+    to: /app/app.jar
+    after: setup
+docker:
+  WORKDIR: /app
+  CMD: ["java", "-jar", "app.jar"]
