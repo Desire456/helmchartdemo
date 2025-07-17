@@ -38,7 +38,8 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}-app:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ .Values.werf.image.helmchartdemo }}
+#          image: localhost:5001/helmchartdemo-app:d7a29ed78d2185f29b9a25b3137361e713d0619a4ad674749406e814-1752732385455
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
